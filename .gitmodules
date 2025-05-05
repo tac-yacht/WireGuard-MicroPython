@@ -1,0 +1,12 @@
+[submodule "micropython"]
+	path = micropython
+	url = https://github.com/micropython/micropython
+	# tag = v1.23.0
+[submodule "esp-idf"]
+	path = esp-idf
+	url = https://github.com/espressif/esp-idf
+	# tag =  v5.0.4
+[submodule "WireGuard"]
+	path = WireGuard
+	url = https://github.com/tac-yacht/WireGuard-ESP32-Arduino
+	branch = experimental_multiplatform

@@ -1,4 +1,5 @@
 #include <string>
+#include <chrono>
 extern "C" {
 // Include MicroPython API.
 #include "py/runtime.h"
@@ -102,6 +103,12 @@ static const char* key_from_mp_arg(mp_arg_val_t arg, const std::string& kw_name)
 
 	return raw;
 }
+static const bool is_valid_system_time() {
+	auto now = std::chrono::system_clock::now();
+	auto seconds = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+	constexpr long one_year_seconds = 365 * 24 * 60 * 60;
+	return seconds > one_year_seconds;
+}
 
 //helper
 /**
@@ -148,6 +155,10 @@ mp_obj_t begin(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
 	const char *remote_peer_public_key = get_key(args, 5);
 	int remote_peer_port = args[6].u_int;
 
+	if(!is_valid_system_time()) {
+		nlr_raise(mp_obj_new_exception_msg(&mp_type_RuntimeError, "time not initialized"));
+	}
+
 	mp_obj_dict_t *result = (mp_obj_dict_t *)mp_obj_new_dict(0);
 	mp_obj_dict_store(result, MP_OBJ_NEW_STR("local_ip"), mp_obj_from_ipaddr(ipaddr));
 	mp_obj_dict_store(result, MP_OBJ_NEW_STR("netmask"), mp_obj_from_ipaddr(netmask));
@@ -156,7 +167,7 @@ mp_obj_t begin(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
 	mp_obj_dict_store(result, MP_OBJ_NEW_STR("remote_peer_address"), mp_obj_new_str(remote_peer_address, strlen(remote_peer_address)));
 	mp_obj_dict_store(result, MP_OBJ_NEW_STR("remote_peer_public_key"), mp_obj_new_str(remote_peer_public_key, strlen(remote_peer_public_key)));
 	mp_obj_dict_store(result, MP_OBJ_NEW_STR("remote_peer_port"), mp_obj_new_int(remote_peer_port));
-	mp_obj_dict_store(result, MP_OBJ_NEW_STR("memo"), MP_OBJ_NEW_STR("キーのバリデーション追加中"));
+	mp_obj_dict_store(result, MP_OBJ_NEW_STR("memo"), MP_OBJ_NEW_STR("状態のバリデーション追加中"));
 
 	if(args[7].u_bool) { //dry_run=Trueの時
 		//接続処理せずに終える

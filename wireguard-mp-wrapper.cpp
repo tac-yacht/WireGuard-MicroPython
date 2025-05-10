@@ -103,7 +103,7 @@ static const char* key_from_mp_arg(mp_arg_val_t arg, const std::string& kw_name)
 
 	return raw;
 }
-static const bool is_valid_system_time() {
+static bool is_valid_system_time() {
 	auto now = std::chrono::system_clock::now();
 	auto seconds = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 	constexpr long one_year_seconds = 365 * 24 * 60 * 60;

@@ -12,6 +12,7 @@ target_sources(usermod_wireguard INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/WireGuard/src/wireguard.c
     ${CMAKE_CURRENT_LIST_DIR}/WireGuard/src/WireGuard.cpp
     ${CMAKE_CURRENT_LIST_DIR}/WireGuard/src/wireguardif.c
+    ${CMAKE_CURRENT_LIST_DIR}/WireGuard/src/default_netif_ESP32.c
     ${CMAKE_CURRENT_LIST_DIR}/WireGuard/src/wireguard-platform.c
     ${CMAKE_CURRENT_LIST_DIR}/wireguard-mp-wrapper.cpp
     ${CMAKE_CURRENT_LIST_DIR}/wireguard-mp-module.c

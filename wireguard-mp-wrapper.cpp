@@ -6,7 +6,7 @@ extern "C" {
 #include "py/obj.h"
 #include "py/objstr.h"
 
-#include "default_netif.h"
+#include "WireGuard/src/default_netif.h"
 }
 
 #include "lwip/ip.h"

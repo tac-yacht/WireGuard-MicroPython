@@ -5,6 +5,8 @@ extern "C" {
 #include "py/runtime.h"
 #include "py/obj.h"
 #include "py/objstr.h"
+
+#include "default_netif.h"
 }
 
 #include "lwip/ip.h"

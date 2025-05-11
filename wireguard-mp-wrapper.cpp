@@ -8,9 +8,12 @@ extern "C" {
 }
 
 #include "lwip/ip.h"
+#include "lwip/netif.h"
 
 //TODO 構成変更するとパスがずれるので要検討
 #include "WireGuard/src/WireGuard-ESP32.h"
+#include "WireGuard/src/default_netif.h"
+
 
 #include "wireguard-mp-wrapper.h"
 
@@ -157,6 +160,14 @@ mp_obj_t begin(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
 
 	if(!is_valid_system_time()) {
 		nlr_raise(mp_obj_new_exception_msg(&mp_type_RuntimeError, "time not initialized"));
+	}
+
+	struct netif* verify_target_netif = get_default_netif();
+	if(!netif_is_up(verify_target_netif)) {
+		nlr_raise(mp_obj_new_exception_msg(&mp_type_RuntimeError, "netif not active"));
+	}
+	if(!netif_is_link_up(verify_target_netif)) {
+		nlr_raise(mp_obj_new_exception_msg(&mp_type_RuntimeError, "netif not linkup"));
 	}
 
 	mp_obj_dict_t *result = (mp_obj_dict_t *)mp_obj_new_dict(0);

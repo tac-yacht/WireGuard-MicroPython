@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - port: esp32
+            board: ESP32_GENERIC_C3
+    uses: ./.github/workflows/build_firmware_multiport_base.yml
+    with:
+      port: ${{ matrix.port }}
+      board: ${{ matrix.board }}

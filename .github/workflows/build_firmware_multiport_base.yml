@@ -23,7 +23,7 @@ jobs:
 
     steps:
     - name: checkout this
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         submodules: recursive
     - name: install dependencies tools
@@ -60,7 +60,7 @@ jobs:
         make submodules
         make BOARD=${{ inputs.board }} USER_C_MODULES=${GITHUB_WORKSPACE}/WireGuard-micropython.cmake
     - name: save firmware
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: ${{ !cancelled() }}
       with:
         name: firmware-${{ inputs.port }}-${{ inputs.board }}

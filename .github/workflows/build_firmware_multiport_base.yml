@@ -1,0 +1,67 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: build_firmware_multiport_base
+
+on:
+  workflow_call:
+    inputs:
+      port:
+        required: true
+        type: string
+      board:
+        required: true
+        type: string
+      runs_on:
+        required: false
+        type: string
+        default: ubuntu-24.04
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runs_on }}
+
+    steps:
+    - name: checkout this
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: install dependencies tools
+      # https://micropython-docs-ja.readthedocs.io/ja/latest/develop/gettingstarted.html#required-dependencies
+      # https://docs.espressif.com/projects/esp-idf/en/latest/esp32c3/get-started/linux-macos-setup.html
+      run: |
+        sudo apt update
+        sudo apt install build-essential libffi-dev git pkg-config
+        sudo apt install wget flex bison gperf python3 python3-pip python3-venv cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
+    - name: install esp-idf
+      run: |
+        cd ${GITHUB_WORKSPACE}/esp-idf
+        ./install.sh >/dev/null
+    - name: patch
+      run: |
+        sed -i 's/#include "esp32-hal-log.h"//' ${GITHUB_WORKSPACE}/WireGuard/src/wireguardif.c
+        sed -i 's/log_e(TAG/ESP_LOGE(TAG,/g' ${GITHUB_WORKSPACE}/WireGuard/src/wireguardif.c
+        sed -i 's/log_w(TAG/ESP_LOGW(TAG,/g' ${GITHUB_WORKSPACE}/WireGuard/src/wireguardif.c
+        sed -i 's/log_i(TAG/ESP_LOGI(TAG,/g' ${GITHUB_WORKSPACE}/WireGuard/src/wireguardif.c
+        sed -i 's/log_d(TAG/ESP_LOGD(TAG,/g' ${GITHUB_WORKSPACE}/WireGuard/src/wireguardif.c
+        sed -i 's/log_v(TAG/ESP_LOGV(TAG,/g' ${GITHUB_WORKSPACE}/WireGuard/src/wireguardif.c
+        sed -i 's/%08x/%08lx/g' ${GITHUB_WORKSPACE}/WireGuard/src/wireguardif.c
+        sed -i 's/%ums\\r\\n/%" PRIu32 "ms/g' ${GITHUB_WORKSPACE}/WireGuard/src/wireguardif.c
+        cp ${GITHUB_WORKSPACE}/sdkconfig.lwipdebug ${GITHUB_WORKSPACE}/micropython/ports/${{ inputs.port }}/boards/${{ inputs.board }}/sdkconfig.lwipdebug
+        sed -i '/set(SDKCONFIG_DEFAULTS/a boards/${{ inputs.board }}/sdkconfig.lwipdebug' ${GITHUB_WORKSPACE}/micropython/ports/${{ inputs.port }}/boards/${{ inputs.board }}/mpconfigboard.cmake
+    - name: build firmware
+      # https://github.com/micropython/micropython/tree/v1.23.0/ports/esp32#setting-up-esp-idf-and-the-build-environment
+      run: |
+        cd ${GITHUB_WORKSPACE}/esp-idf
+        source export.sh
+        cd ${GITHUB_WORKSPACE}/micropython
+        make -C mpy-cross
+        cd ports/${{ inputs.port }}
+        make submodules
+        make BOARD=${{ inputs.board }} USER_C_MODULES=${GITHUB_WORKSPACE}/WireGuard-micropython.cmake
+    - name: save firmware
+      uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: firmware-${{ inputs.port }}-${{ inputs.board }}
+        path: micropython/ports/${{ inputs.port }}/build-${{ inputs.board }}/firmware.bin

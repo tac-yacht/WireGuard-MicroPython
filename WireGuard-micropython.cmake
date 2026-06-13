@@ -25,9 +25,3 @@ target_include_directories(usermod_wireguard INTERFACE
 
 # Link our INTERFACE library to the usermod target.
 target_link_libraries(usermod INTERFACE usermod_wireguard)
-
-#target_link_libraries(usermod_wireguard INTERFACE
-#    idf::esp_system
-#    idf::esp_netif
-#    idf::lwip
-#)

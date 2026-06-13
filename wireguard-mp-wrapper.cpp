@@ -48,6 +48,8 @@ static mp_obj_t mp_obj_from_ipaddr(ip_addr_t src) {
 static bool mp_obj_is_bytes(mp_obj_t o) {
 	return mp_obj_is_type(o, &mp_type_bytes);
 }
+MP_MINIMAL_UNUSED(mp_obj_is_bytes)
+
 static size_t mp_obj_get_length(mp_obj_t o) {
 	return mp_obj_get_int(mp_obj_len(o));
 }

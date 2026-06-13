@@ -29,13 +29,13 @@ static ip_addr_t ipaddr_from_mp_arg(mp_arg_val_t arg, const std::string& kw_name
 	}
 
 	if (arg.u_obj == nullptr || !mp_obj_is_str(arg.u_obj)) {
-		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_TypeError, "%sexpected a string IP address", prefix.c_str()));
+		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_TypeError, MP_ERROR_TEXT("%sexpected a string IP address"), prefix.c_str()));
 	}
 
 	const char *ipaddr_str = mp_obj_str_get_str(arg.u_obj);
 	ip_addr_t result;
 	if(!ipaddr_aton(ipaddr_str, &result)) {
-		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_ValueError, "%sinvalid IP [raw value: %s]", prefix.c_str(), ipaddr_str));
+		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_ValueError, MP_ERROR_TEXT("%sinvalid IP [raw value: %s]"), prefix.c_str(), ipaddr_str));
 	}
 	
 	return result;
@@ -78,10 +78,10 @@ static const char* key_from_mp_arg(mp_arg_val_t arg, const std::string& kw_name)
 	}
 
 	if (arg.u_obj == nullptr || !mp_obj_is_str_or_bytes(arg.u_obj)) {
-		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_TypeError, "%sexpected a string or bytes", prefix.c_str()));
+		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_TypeError, MP_ERROR_TEXT("%sexpected a string or bytes"), prefix.c_str()));
 	}
 	if (mp_obj_get_length(arg.u_obj)==0) {
-		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_TypeError, "%sexpected not empty", prefix.c_str()));
+		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_TypeError, MP_ERROR_TEXT("%sexpected not empty"), prefix.c_str()));
 	}
 
 	const char *raw = mp_obj_is_str(arg.u_obj)? mp_obj_str_get_str(arg.u_obj) : b2a_base64(arg.u_obj);
@@ -92,13 +92,13 @@ static const char* key_from_mp_arg(mp_arg_val_t arg, const std::string& kw_name)
 		decode_result = mp_obj_is_str(arg.u_obj)? a2b_base64(std::string(raw)) : arg.u_obj;
 		nlr_pop();
 	} else {
-		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_ValueError, "%sexpected Base64 [raw value: %s]", prefix.c_str(), mp_obj_str_get_str(arg.u_obj)));
+		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_ValueError, MP_ERROR_TEXT("%sexpected Base64 [raw value: %s]"), prefix.c_str(), mp_obj_str_get_str(arg.u_obj)));
 	}
 
 	const size_t key_length = 32;
 	const size_t result_length = mp_obj_get_length(decode_result);
 	if(result_length != key_length) {
-		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_ValueError, "%sexpected key length is %d bytes. [actual: %d]", prefix.c_str(), key_length, result_length));
+		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_ValueError, MP_ERROR_TEXT("%sexpected key length is %d bytes. [actual: %d]"), prefix.c_str(), key_length, result_length));
 	}
 
 	return raw;
@@ -156,7 +156,7 @@ mp_obj_t begin(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
 	int remote_peer_port = args[6].u_int;
 
 	if(!is_valid_system_time()) {
-		nlr_raise(mp_obj_new_exception_msg(&mp_type_RuntimeError, "time not initialized"));
+		nlr_raise(mp_obj_new_exception_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("time not initialized")));
 	}
 
 	mp_obj_dict_t *result = (mp_obj_dict_t *)mp_obj_new_dict(0);

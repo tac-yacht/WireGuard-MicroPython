@@ -23,5 +23,10 @@ target_include_directories(usermod_wireguard PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
+target_link_libraries(usermod_wireguard PRIVATE
+    idf::idf::esp_idf_lib
+    idf::lwip
+)
+
 # Link our INTERFACE library to the usermod target.
 target_link_libraries(usermod INTERFACE usermod_wireguard)

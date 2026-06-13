@@ -1,8 +1,8 @@
 # Create an INTERFACE library for our CPP module.
-add_library(usermod_wireguard INTERFACE)
+add_library(usermod_wireguard OBJECT)
 
 # Add our source files to the library.
-target_sources(usermod_wireguard INTERFACE
+target_sources(usermod_wireguard PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/WireGuard/src/crypto/refc/blake2s.c
     ${CMAKE_CURRENT_LIST_DIR}/WireGuard/src/crypto/refc/chacha20.c
     ${CMAKE_CURRENT_LIST_DIR}/WireGuard/src/crypto/refc/chacha20poly1305.c
@@ -19,7 +19,7 @@ target_sources(usermod_wireguard INTERFACE
 )
 
 # Add the current directory as an include directory.
-target_include_directories(usermod_wireguard INTERFACE
+target_include_directories(usermod_wireguard PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )
 

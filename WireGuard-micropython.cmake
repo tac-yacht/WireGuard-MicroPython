@@ -24,7 +24,7 @@ target_include_directories(usermod_wireguard PUBLIC
 )
 
 target_link_libraries(usermod_wireguard PRIVATE
-    idf::idf::esp_idf_lib
+    idf::esp_idf_lib
     idf::lwip
 )
 

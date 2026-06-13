@@ -10,7 +10,7 @@ extern "C" {
 #include "lwip/ip.h"
 
 //TODO 構成変更するとパスがずれるので要検討
-#include "WireGuard/src/WireGuard-ESP32.h"
+#include "../WireGuard/src/WireGuard-ESP32.h"
 
 #include "wireguard-mp-wrapper.h"
 
